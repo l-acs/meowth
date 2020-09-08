@@ -51,6 +51,9 @@
 (defn get-room-info [cfg rid]
   (rocket-get cfg "rooms.info" "roomId" rid))
 
+(defn get-data-from-username [cfg username]
+  (->> username (rocket-get cfg "users.info" "username") get-request-body))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
