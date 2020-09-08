@@ -43,6 +43,11 @@
    (assoc (headers cfg) :form-params {:message {:rid rid :msg msg}} :content-type :json  )))
 
 
+(defn get-request-body
+  "Gets the :body of a request as a hashmap"
+  [raw]
+  (json/parse-string (:body raw) true))
+
 (defn get-room-info [cfg rid]
   (rocket-get cfg "rooms.info" "roomId" rid))
 
