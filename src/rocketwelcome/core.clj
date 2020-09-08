@@ -36,13 +36,6 @@
     {  (first args)
        (->> args rest (apply hash-map))})))
 
-
-(defn message [cfg rid msg]
-  (client/post
-   (rocket-gen-url cfg "chat.sendMessage")
-   (assoc (headers cfg) :form-params {:message {:rid rid :msg msg}} :content-type :json  )))
-
-
 (defn get-request-body
   "Gets the :body of a request as a hashmap"
   [raw]
@@ -51,8 +44,22 @@
 (defn get-room-info [cfg rid]
   (rocket-get cfg "rooms.info" "roomId" rid))
 
+(defn get-rid-from-channel-name [cfg name]
+  (->> name (rocket-get cfg "channels.info" "roomName") get-request-body :channel :_id))
+
 (defn get-data-from-username [cfg username]
   (->> username (rocket-get cfg "users.info" "username") get-request-body))
+
+(defn get-rid-from-username [cfg username]
+  (->> username (get-data-from-username cfg) :user :_id))
+
+(defn message-rid [cfg rid msg]
+  (client/post
+   (rocket-gen-url cfg "chat.sendMessage")
+   (assoc (headers cfg) :form-params {:message {:rid rid :msg msg}} :content-type :json  )))
+
+(defn message-user [cfg username msg]
+  (message-rid cfg (str (get-rid-from-username cfg username) (:id cfg)) msg))
 
 (defn -main
   "I don't do a whole lot ... yet."
