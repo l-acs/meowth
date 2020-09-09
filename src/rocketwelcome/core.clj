@@ -50,7 +50,7 @@
 (defn get-data-from-username [cfg username]
   (->> username (rocket-get cfg "users.info" "username") get-request-body))
 
-(defn get-rid-from-username [cfg username]
+(defn get-id-from-username [cfg username]
   (->> username (get-data-from-username cfg) :user :_id))
 
 (defn message-rid [cfg rid msg]
@@ -59,7 +59,7 @@
    (assoc (headers cfg) :form-params {:message {:rid rid :msg msg}} :content-type :json  )))
 
 (defn message-user [cfg username msg]
-  (message-rid cfg (str (get-rid-from-username cfg username) (:id cfg)) msg))
+  (message-rid cfg (str (get-id-from-username cfg username) (:id cfg)) msg))
 
 (defn get-users [cfg amt offset]
   (get-request-body (rocket-get cfg "users.list" 'count amt 'offset offset)))
