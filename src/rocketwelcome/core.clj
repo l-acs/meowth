@@ -61,6 +61,19 @@
 (defn message-user [cfg username msg]
   (message-rid cfg (str (get-rid-from-username cfg username) (:id cfg)) msg))
 
+(defn get-users [cfg amt offset]
+  (get-request-body (rocket-get cfg "users.list" 'count amt 'offset offset)))
+
+(defn get-all-users [cfg]
+  (defn _help [acc amt offset]
+    (let [request (get-users cfg amt offset)
+          total (:total request)
+          acc (concat (:users request) acc)]
+      (if (= (count acc) total)
+        acc
+        (_help acc amt (+ offset amt)))))
+  (_help '() 100 0))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
