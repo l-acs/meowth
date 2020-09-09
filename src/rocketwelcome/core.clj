@@ -53,13 +53,16 @@
 (defn get-id-from-username [cfg username]
   (->> username (get-data-from-username cfg) :user :_id))
 
+(defn get-pm-rid-from-username [cfg username]
+  (str (get-id-from-username cfg username) (:id cfg)))
+
 (defn message-rid [cfg rid msg]
   (client/post
    (rocket-gen-url cfg "chat.sendMessage")
    (assoc (headers cfg) :form-params {:message {:rid rid :msg msg}} :content-type :json  )))
 
 (defn message-user [cfg username msg]
-  (message-rid cfg (str (get-id-from-username cfg username) (:id cfg)) msg))
+ (message-rid cfg (get-pm-rid-from-username cfg username) msg))
 
 (defn get-users [cfg amt offset]
   (get-request-body (rocket-get cfg "users.list" 'count amt 'offset offset)))
