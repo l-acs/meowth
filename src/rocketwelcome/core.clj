@@ -36,7 +36,7 @@
     {  (first args)
        (->> args rest (apply hash-map))})))
 
-(defn get-request-body
+(defn request-body
   "Gets the :body of a request as a hashmap"
   [raw]
   (json/parse-string (:body raw) true))
@@ -45,10 +45,10 @@
   (rocket-get cfg "rooms.info" "roomId" rid))
 
 (defn get-rid-from-channel-name [cfg name]
-  (->> name (rocket-get cfg "channels.info" "roomName") get-request-body :channel :_id))
+  (->> name (rocket-get cfg "channels.info" "roomName") request-body :channel :_id))
 
 (defn get-data-from-username [cfg username]
-  (->> username (rocket-get cfg "users.info" "username") get-request-body))
+  (->> username (rocket-get cfg "users.info" "username") request-body))
 
 (defn get-id-from-username [cfg username]
   (->> username (get-data-from-username cfg) :user :_id))
@@ -65,7 +65,7 @@
  (message-rid cfg (get-pm-rid-from-username cfg username) msg))
 
 (defn get-users [cfg amt offset]
-  (get-request-body (rocket-get cfg "users.list" 'count amt 'offset offset)))
+  (request-body (rocket-get cfg "users.list" 'count amt 'offset offset)))
 
 (defn get-all-users [cfg]
   (defn _help [acc amt offset]
