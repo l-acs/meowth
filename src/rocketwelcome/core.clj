@@ -77,6 +77,9 @@
 (defn all-rooms [userlist]
   (->>  userlist (map :__rooms) (apply concat) distinct))
 
+(defn make-dm-rid-list [id userlist]
+  (map #(str (:_id %) id) userlist))
+
 (defn get-user-rooms [cfg id]
   (map :rid (:rooms (:user (request-body (rocket-get cfg "users.info" "userId" id "fields" "{\"userRooms\": 1}"))))))
 
