@@ -77,6 +77,12 @@
 (defn all-rooms [userlist]
   (->>  userlist (map :__rooms) (apply concat) distinct))
 
+(defn get-user-rooms [cfg id]
+  (map :rid (:rooms (:user (request-body (rocket-get cfg "users.info" "userId" id "fields" "{\"userRooms\": 1}"))))))
+
+(defn get-user-dms [cfg id]
+ (remove #(not= (count %) 34) (get-user-rooms cfg id)))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
