@@ -9,18 +9,15 @@
 (defn parse-conf [cfg-file]
   (-> cfg-file slurp edn/read-string))
 
-
 (defn headers [cfg]
   {:headers
    {"X-Auth-Token" (:token cfg),
     "X-User-Id" (:id cfg),
     "Content-type" "application/json"}})
 
-
 (defn rocket-gen-url [cfg call & args]
   (str (cfg :url)  "/api/v1/" call
     (when args (->> args conj (partition 2) (map (fn [[x y]] (str x "=" y))) (str/join "&") (str "?")))))
-
 
 (defn rocket-get [cfg call & args]
   (client/get
@@ -62,7 +59,7 @@
    (assoc (headers cfg) :form-params {:message {:rid rid :msg msg}} :content-type :json  )))
 
 (defn message-user [cfg username msg]
- (message-rid cfg (get-pm-rid-from-username cfg username) msg))
+  (message-rid cfg (get-pm-rid-from-username cfg username) msg))
 
 (defn get-users [cfg amt offset]
   (request-body (rocket-get cfg "users.list" 'count amt 'offset offset)))
