@@ -86,6 +86,11 @@
 (defn get-user-dms [cfg id]
  (remove #(not= (count %) 34) (get-user-rooms cfg id)))
 
+(defn get-unmessaged-dm-rids [cfg id userlist]
+ (clojure.set/difference
+  (into #{} (make-dm-rid-list id userlist))
+  (into #{} (get-user-dms cfg id))))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
