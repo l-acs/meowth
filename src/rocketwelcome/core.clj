@@ -45,10 +45,10 @@
   (->> name (rocket-get cfg "channels.info" "roomName") request-body :channel :_id))
 
 (defn get-data-from-username [cfg username]
-  (->> username (rocket-get cfg "users.info" "username") request-body))
+  (->> username (rocket-get cfg "users.info" "username") request-body :user))
 
 (defn get-id-from-username [cfg username]
-  (->> username (get-data-from-username cfg) :user :_id))
+  (->> username (get-data-from-username cfg) :_id))
 
 (defn get-pm-rid-from-username [cfg username]
   (str (get-id-from-username cfg username) (:id cfg)))
