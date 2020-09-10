@@ -74,6 +74,9 @@
         (_help acc amt (+ offset amt)))))
   (_help '() 100 0))
 
+(defn all-rooms [userlist]
+  (->>  userlist (map :__rooms) (apply concat) distinct))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
