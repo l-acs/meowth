@@ -118,6 +118,18 @@
 (defn user-rooms [user]
   (:__rooms user))
 
+(defn userfields [user]
+  {
+   :first-name (user-first-name user)
+   :email (user-email user)
+   :rooms (user-rooms user)
+   :username (:username user)
+   :bio (:statusText user)
+   :selfsetname (user-name user)
+   :timezone (:utcOffset user)
+   :connection (:statusConnection user)
+   })
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
