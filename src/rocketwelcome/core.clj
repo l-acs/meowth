@@ -79,6 +79,9 @@
 (defn get-all-users [cfg]
   (get-all cfg "users.list" :users))
 
+(defn get-all-channels [cfg]
+  (get-all cfg "channels.list" :channels))
+
 
 (defn make-dm-rid-list [id userlist]
   (map #(str (:_id %) id) userlist))
