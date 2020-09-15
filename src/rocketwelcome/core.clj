@@ -94,7 +94,7 @@
   (into #{} (make-dm-rid-list id userlist))
   (into #{} (get-user-dms cfg id))))
 
-(defn first-name [user]
+(defn _first-name [user]
   (first
    (str/split
     (if-some [name (:name user)]
@@ -106,8 +106,8 @@
   (let [split (str/split str #"")]
     (str/join (cons (str/upper-case (first split)) (rest split)))))
 
-(defn user-name [user]
-  (capitalize-first-letter (first-name user)))
+(defn user-first-name [user]
+  (capitalize-first-letter (_first-name user)))
 
 (defn -main
   "I don't do a whole lot ... yet."
