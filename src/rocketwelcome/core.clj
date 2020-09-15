@@ -94,12 +94,18 @@
   (into #{} (make-dm-rid-list id userlist))
   (into #{} (get-user-dms cfg id))))
 
+(defn user-email [user]
+  (-> user :emails first :address))
+
+(defn user-name [user]
+  (:name user))
+
 (defn _first-name [user]
   (first
    (str/split
-    (if-some [name (:name user)]
-      (first (str/split (:name user) #"\s"))
-      (-> user :emails first :address))
+    (if-some [name (user-name user)]
+      (first (str/split name #"\s"))
+      (user-email user))
     #"\.")))
 
 (defn capitalize-first-letter [str]
@@ -108,6 +114,9 @@
 
 (defn user-first-name [user]
   (capitalize-first-letter (_first-name user)))
+
+(defn user-rooms [user]
+  (:__rooms user))
 
 (defn -main
   "I don't do a whole lot ... yet."
