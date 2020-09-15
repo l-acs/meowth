@@ -74,14 +74,11 @@
         (_help acc amt (+ offset amt)))))
   (_help '() 100 0))
 
-(defn all-rooms [userlist]
-  (->>  userlist (map :__rooms) (apply concat) distinct))
 (defn get-all-users [cfg]
   (get-all cfg "users.list" :users))
 
 (defn get-all-channels [cfg]
   (get-all cfg "channels.list" :channels))
-
 
 (defn make-dm-rid-list [id userlist]
   (map #(str (:_id %) id) userlist))
@@ -139,3 +136,13 @@
   (println "Hello, World!"))
 
 
+(comment
+
+  (def conf (parse-conf "conf.edn"))
+  (def allusers (get-all-users conf))
+  (def allchannels (get-all-channels conf))
+
+  (defn all-rooms [userlist]
+    (->>  userlist (map :__rooms) (apply concat) distinct))
+
+)
