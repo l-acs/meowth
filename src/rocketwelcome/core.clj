@@ -61,14 +61,14 @@
 (defn message-user [cfg username msg]
   (message-rid cfg (get-pm-rid-from-username cfg username) msg))
 
-(defn get-users [cfg amt offset]
-  (request-body (rocket-get cfg "users.list" 'count amt 'offset offset)))
+(defn get-some [cfg method amt offset]
+  (request-body (rocket-get cfg method 'count amt 'offset offset)))
 
-(defn get-all-users [cfg]
+(defn get-all [cfg method field]
   (defn _help [acc amt offset]
-    (let [request (get-users cfg amt offset)
+    (let [request (get-some cfg method amt offset)
           total (:total request)
-          acc (concat (:users request) acc)]
+          acc (concat (field request) acc)]
       (if (= (count acc) total)
         acc
         (_help acc amt (+ offset amt)))))
@@ -76,6 +76,9 @@
 
 (defn all-rooms [userlist]
   (->>  userlist (map :__rooms) (apply concat) distinct))
+(defn get-all-users [cfg]
+  (get-all cfg "users.list" :users))
+
 
 (defn make-dm-rid-list [id userlist]
   (map #(str (:_id %) id) userlist))
