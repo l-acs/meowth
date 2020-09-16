@@ -126,6 +126,15 @@
    (into #{} clist)
    (into #{} (user-rooms user))))
 
+(defn user-channel-groups-hashmap
+  "Given a user and the config, return a hashmap containing, for each channel group, a key/value pair of that group name and the subset of those channels of which the user is a member"
+  [cfg user]
+  (into {}
+        (map
+         (fn [[grpname channelids]]
+           [grpname (user-joined-channels-list user channelids)])
+         (cfg :channel-groups-ids))))
+
 (defn userfields [user]
   {
    :first-name (user-first-name user)
