@@ -135,7 +135,7 @@
            [grpname (user-joined-channels-list user channelids)])
          (cfg :channel-groups-ids))))
 
-(defn userfields [user]
+(defn userfields [cfg user]
   {
    :first-name (user-first-name user)
    :email (user-email user)
@@ -145,6 +145,7 @@
    :selfsetname (user-name user)
    :timezone (:utcOffset user)
    :connection (:statusConnection user)
+   :channel-groups (user-channel-groups-hashmap cfg user)
    })
 
 (defn add-channel-group-ids-to-cfg
