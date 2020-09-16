@@ -119,6 +119,13 @@
 (defn user-rooms [user]
   (:__rooms user))
 
+(defn user-joined-channels-list
+  "From a user and a list of channels, which of those channels is that user in?"
+  [user clist]
+  (set/intersection
+   (into #{} clist)
+   (into #{} (user-rooms user))))
+
 (defn userfields [user]
   {
    :first-name (user-first-name user)
