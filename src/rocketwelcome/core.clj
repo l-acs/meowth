@@ -151,6 +151,7 @@
   (def conf (add-channel-group-ids-to-cfg (parse-conf "conf.edn")))
   (def allusers (get-all-users conf))
   (def allchannels (get-all-channels conf))
+  (def alluserinfo (map #(userfields conf %) allusers))
 
   (defn all-rooms [userlist]
     (->>  userlist (map :__rooms) (apply concat) distinct))
