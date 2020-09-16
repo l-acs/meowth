@@ -4,7 +4,8 @@
    [clj-http.client :as client]
    [clojure.edn :as edn]
    [clojure.string :as str]
-   [cheshire.core :as json]))
+   [cheshire.core :as json]
+   [clojure.set :as set]))
 
 (defn parse-conf [cfg-file]
   (-> cfg-file slurp edn/read-string))
@@ -90,7 +91,7 @@
  (remove #(not= (count %) 34) (get-user-rooms cfg id)))
 
 (defn get-unmessaged-dm-rids [cfg id userlist]
- (clojure.set/difference
+ (set/difference
   (into #{} (make-dm-rid-list id userlist))
   (into #{} (get-user-dms cfg id))))
 
