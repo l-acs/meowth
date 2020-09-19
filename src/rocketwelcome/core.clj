@@ -5,7 +5,8 @@
    [clojure.edn :as edn]
    [clojure.string :as str]
    [cheshire.core :as json]
-   [clojure.set :as set]))
+   [clojure.set :as set]
+   [comb.template :as template]))
 
 (defn parse-conf [cfg-file]
   (-> cfg-file slurp edn/read-string))
@@ -148,6 +149,9 @@
    :channel-groups (user-channel-groups-hashmap cfg user)
    })
 
+(defn make-blurb [cfg user]
+  (template/eval (:blurb cfg) user))
+
 (defn add-channel-group-ids-to-cfg
   "Given a config with a :channel-groups field corresponding to a hashmap of groups of channels, add a new field, :channel-groups-ids, where each channel name has been mapped to a channel id."
   [cfg]
@@ -169,6 +173,8 @@
   (def allusers (get-all-users conf))
   (def allchannels (get-all-channels conf))
   (def alluserinfo (map #(userfields conf %) allusers))
+
+  (make-blurb conf (first alluserinfo))
 
   (defn all-rooms [userlist]
     (->>  userlist (map :__rooms) (apply concat) distinct))
