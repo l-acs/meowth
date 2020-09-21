@@ -180,6 +180,11 @@
     (Thread/sleep (calculate-message-type-time msg (:wpm cfg)))
     (message-user cfg username msg)))
 
+(defn send-blurb-to-user [cfg username msg]
+  (if (:send-paragraphs-as-separate-messages cfg)
+    (run! #(delay-send-message cfg username %) (str/split msg #"\n\n"))
+    (message-user cfg username msg)))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
