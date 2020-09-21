@@ -136,7 +136,9 @@
            [grpname (user-joined-channels-list user channelids)])
          (cfg :channel-groups-ids))))
 
-(defn userfields [cfg user]
+(defn userfields
+  "Template-able info for a user"
+  [cfg user]
   {
    :first-name (user-first-name user)
    :email (user-email user)
@@ -147,6 +149,7 @@
    :timezone (:utcOffset user)
    :connection (:statusConnection user)
    :channel-groups (user-channel-groups-hashmap cfg user)
+   :__all user ; still include _all_ info in the `user` hashmap, in case
    })
 
 (defn make-blurb [cfg fields]
