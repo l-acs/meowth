@@ -1,4 +1,4 @@
-(ns rocketwelcome.core
+(ns meowth.core
   (:gen-class)
   (:require
    [clj-http.client :as client]
