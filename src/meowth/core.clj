@@ -149,8 +149,8 @@
    :channel-groups (user-channel-groups-hashmap cfg user)
    })
 
-(defn make-blurb [cfg user]
-  (template/eval (:blurb cfg) user))
+(defn make-blurb [cfg fields]
+  (template/eval (:blurb cfg) fields))
 
 (defn add-channel-group-ids-to-cfg
   "Given a config with a :channel-groups field corresponding to a hashmap of groups of channels, add a new field, :channel-groups-ids, where each channel name has been mapped to a channel id."
