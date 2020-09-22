@@ -52,16 +52,10 @@
 (defn get-id-from-username [cfg username]
   (->> username (get-data-from-username cfg) :_id))
 
-(defn get-pm-rid-from-username [cfg username]
-  (str (get-id-from-username cfg username) (:id cfg)))
-
-(defn message-rid [cfg rid msg]
+(defn post-message [cfg room msg]
   (client/post
-   (rocket-gen-url cfg "chat.sendMessage")
-   (assoc (headers cfg) :form-params {:message {:rid rid :msg msg}} :content-type :json  )))
-
-(defn message-user [cfg username msg]
-  (message-rid cfg (get-pm-rid-from-username cfg username) msg))
+   (rocket-gen-url cfg "chat.postMessage")
+   (assoc (headers cfg) :form-params {:channel room :text msg :content-type :json})))
 
 (defn get-some [cfg method amt offset]
   (response-body (rocket-get cfg method 'count amt 'offset offset)))
@@ -178,12 +172,12 @@
 (defn delay-send-message [cfg username msg]
   (do
     (Thread/sleep (calculate-message-type-time msg (:wpm cfg)))
-    (message-user cfg username msg)))
+    (post-message cfg (str "@" username) msg)))
 
 (defn send-blurb-to-user [cfg username msg]
   (if (:send-paragraphs-as-separate-messages cfg)
     (run! #(delay-send-message cfg username %) (str/split msg #"\n\n"))
-    (message-user cfg username msg)))
+    (post-message cfg (str "@" username) msg)))
 
 (defn -main
   "I don't do a whole lot ... yet."
