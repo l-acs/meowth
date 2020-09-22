@@ -35,8 +35,8 @@
     {  (first args)
        (->> args rest (apply hash-map))})))
 
-(defn request-body
-  "Gets the :body of a request as a hashmap"
+(defn response-body
+  "Gets the :body of a response as a hashmap"
   [raw]
   (json/parse-string (:body raw) true))
 
@@ -44,10 +44,10 @@
   (rocket-get cfg "rooms.info" "roomId" rid))
 
 (defn get-rid-from-channel-name [cfg name]
-  (->> name (rocket-get cfg "channels.info" "roomName") request-body :channel :_id))
+  (->> name (rocket-get cfg "channels.info" "roomName") response-body :channel :_id))
 
 (defn get-data-from-username [cfg username]
-  (->> username (rocket-get cfg "users.info" "username") request-body :user))
+  (->> username (rocket-get cfg "users.info" "username") response-body :user))
 
 (defn get-id-from-username [cfg username]
   (->> username (get-data-from-username cfg) :_id))
@@ -64,13 +64,13 @@
   (message-rid cfg (get-pm-rid-from-username cfg username) msg))
 
 (defn get-some [cfg method amt offset]
-  (request-body (rocket-get cfg method 'count amt 'offset offset)))
+  (response-body (rocket-get cfg method 'count amt 'offset offset)))
 
 (defn get-all [cfg method field]
   (defn _help [acc amt offset]
-    (let [request (get-some cfg method amt offset)
-          total (:total request)
-          acc (concat (field request) acc)]
+    (let [response (get-some cfg method amt offset)
+          total (:total response)
+          acc (concat (field response) acc)]
       (if (= (count acc) total)
         acc
         (_help acc amt (+ offset amt)))))
@@ -86,7 +86,7 @@
   (map #(str (:_id %) id) userlist))
 
 (defn get-user-rooms [cfg id]
-  (map :rid (:rooms (:user (request-body (rocket-get cfg "users.info" "userId" id "fields" "{\"userRooms\": 1}"))))))
+  (map :rid (:rooms (:user (response-body (rocket-get cfg "users.info" "userId" id "fields" "{\"userRooms\": 1}"))))))
 
 (defn get-user-dms [cfg id]
  (remove #(not= (count %) 34) (get-user-rooms cfg id)))
