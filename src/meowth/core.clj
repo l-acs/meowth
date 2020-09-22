@@ -179,6 +179,9 @@
     (run! #(delay-send-message cfg username %) (str/split msg #"\n\n"))
     (post-message cfg (str "@" username) msg)))
 
+(defn send-blurbs-to-users [cfg userfieldslist]
+  (run! #(future (send-blurb-to-user cfg (:username %) (make-blurb cfg %))) userfieldslist))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
@@ -193,6 +196,7 @@
   (def alluserinfo (map #(userfields conf %) allusers))
 
   (make-blurb conf (first alluserinfo))
+  (send-blurbs-to-users conf alluserinfo)
 
   (defn all-rooms [userlist]
     (->>  userlist (map :__rooms) (apply concat) distinct))
