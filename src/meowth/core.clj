@@ -73,19 +73,14 @@
 (defn get-all-channels [cfg]
   (get-all cfg "channels.list" :channels))
 
-(defn make-dm-rid-list [id userlist]
-  (map #(str (:_id %) id) userlist))
-
 (defn get-user-rooms [cfg id]
   (map :rid (:rooms (:user (response-body (rocket-get cfg "users.info" "userId" id "fields" "{\"userRooms\": 1}"))))))
 
 (defn get-user-dms [cfg id]
   (filter #(= (count %) 34) (get-user-rooms cfg id)))
 
-(defn get-unmessaged-dm-rids [cfg id userlist]
- (set/difference
-  (into #{} (make-dm-rid-list id userlist))
-  (into #{} (get-user-dms cfg id))))
+(defn messaged-user? [cfg dms id]
+  (some? (seq (filter #(re-matches (re-pattern (str ".*" id ".*")) %) dms))))
 
 (defn user-email [user]
   (-> user :emails first :address))
