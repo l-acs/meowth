@@ -184,6 +184,14 @@
 (defn send-blurbs-to-users [cfg userfieldslist]
   (run! #(future (send-blurb-to-user cfg (:username %) (make-blurb cfg %))) userfieldslist))
 
+(defn decide-users
+  "Given a config, come up with the list of users to be messaged"
+  [cfg]
+  (case (:message-condition cfg)
+    :new nil ; FIXME
+    :all (map #(userfields cfg %) (get-all-users cfg))
+    :unmessaged (remove :messaged? (map #(userfields cfg %) (get-all-users cfg)))))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
