@@ -135,6 +135,7 @@
    :timezone (:utcOffset user)
    :connection (:statusConnection user)
    :channel-groups (user-channel-groups-hashmap cfg user)
+   :messaged? (messaged-user? cfg (:dms cfg) (:_id user))
    :__all user ; still include _all_ info in the `user` hashmap, in case
    })
 
