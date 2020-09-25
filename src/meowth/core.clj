@@ -80,7 +80,7 @@
   (map :rid (:rooms (:user (response-body (rocket-get cfg "users.info" "userId" id "fields" "{\"userRooms\": 1}"))))))
 
 (defn get-user-dms [cfg id]
- (remove #(not= (count %) 34) (get-user-rooms cfg id)))
+  (filter #(= (count %) 34) (get-user-rooms cfg id)))
 
 (defn get-unmessaged-dm-rids [cfg id userlist]
  (set/difference
