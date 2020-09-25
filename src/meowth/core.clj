@@ -158,6 +158,12 @@
                       [k (map #(get-rid-from-channel-name cfg %) v)])
                     (:channel-groups cfg)))))
 
+(defn add-bot-dms-to-cfg
+  "Given a config, return a new map with an additional field for a list of the DM rooms the user is in"
+  [cfg]
+  (assoc cfg
+         :dms (get-user-dms cfg (:id cfg))))
+
 (defn calculate-message-type-time
   "Type message at appropriate WPM delay"
   [msg wpm]
@@ -190,7 +196,7 @@
 
 (comment
 
-  (def conf (add-channel-group-ids-to-cfg (parse-conf "conf.edn")))
+  (def conf (-> "conf.edn" parse-conf add-bot-dms-to-cfg add-bot-dms-to-cfg))
   (def allusers (get-all-users conf))
   (def allchannels (get-all-channels conf))
   (def alluserinfo (map #(userfields conf %) allusers))
