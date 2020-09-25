@@ -8,9 +8,6 @@
    [clojure.set :as set]
    [comb.template :as template]))
 
-(defn parse-conf [cfg-file]
-  (-> cfg-file slurp edn/read-string))
-
 (defn headers [cfg]
   {:headers
    {"X-Auth-Token" (:token cfg),
@@ -148,6 +145,9 @@
 
 (defn make-blurb [cfg fields]
   (template/eval (:blurb cfg) fields))
+
+(defn parse-conf [cfg-file]
+  (-> cfg-file slurp edn/read-string))
 
 (defn add-channel-group-ids-to-cfg
   "Given a config with a :channel-groups field corresponding to a hashmap of groups of channels, add a new field, :channel-groups-ids, where each channel name has been mapped to a channel id."
