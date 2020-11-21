@@ -6,6 +6,7 @@
    [comb.template :as template]
    [meowth.gather :as gather]
    [meowth.message :as message]
+   [meowth.role :as role]
    [meowth.user :as user]))
 
 (defn make-blurb [cfg fields]

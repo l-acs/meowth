@@ -1,8 +1,15 @@
 (ns meowth.user
   (:gen-class)
+  (:use [meowth.rest :only [rocket-get response-body]])
   (:require
    [clojure.string :as str]
    [clojure.set :as set]))
+
+(defn get-data-from-username [cfg username]
+  (->> username (rocket-get cfg "users.info" "username") response-body :user))
+
+(defn get-id-from-username [cfg username]
+  (->> username (get-data-from-username cfg) :_id))
 
 (defn messaged? [cfg dms id]
   (some? (seq (filter #(re-matches (re-pattern (str ".*" id ".*")) %) dms))))
