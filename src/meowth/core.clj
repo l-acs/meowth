@@ -15,16 +15,13 @@
 (defn parse-conf [cfg-file]
   (-> cfg-file slurp edn/read-string))
 
-(defn get-rid-from-channel-name [cfg name]
-  (->> name (rocket-get cfg "channels.info" "roomName") response-body :channel :_id))
-
 (defn add-channel-group-ids-to-cfg
   "Given a config with a :channel-groups field corresponding to a hashmap of groups of channels, add a new field, :channel-groups-ids, where each channel name has been mapped to a channel id."
   [cfg]
   (assoc cfg :channel-groups-ids
          (into {}
                (map (fn [[k v]]
-                      [k (map #(get-rid-from-channel-name cfg %) v)])
+                      [k (map #(gather/get-rid-from-channel-name cfg %) v)])
                     (:channel-groups cfg)))))
 
 (defn add-bot-dms-to-cfg

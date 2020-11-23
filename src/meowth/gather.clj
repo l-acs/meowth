@@ -21,6 +21,9 @@
 (defn get-all-channels [cfg]
   (get-all cfg "channels.list" :channels))
 
+(defn get-rid-from-channel-name [cfg name]
+  (->> name (rocket-get cfg "channels.info" "roomName") response-body :channel :_id))
+
 (defn get-user-rooms [cfg id]
   (map :rid (:rooms (:user (response-body (rocket-get cfg "users.info" "userId" id "fields" "{\"userRooms\": 1}"))))))
 
