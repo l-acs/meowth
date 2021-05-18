@@ -25,6 +25,14 @@
    {:headers (headers cfg)
     :form-params (apply hash-map args)}))
 
+(defn rocket-post-new [cfg call & args]
+  (client/post
+   (rocket-gen-url cfg call)
+   {:headers (headers cfg)
+    :form-params (apply hash-map args)
+    :content-type :json}))
+
+
 (defn response-body
   "Gets the :body of a response as a hashmap"
   [raw]

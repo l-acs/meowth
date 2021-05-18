@@ -7,7 +7,9 @@
    [meowth.gather :as gather]
    [meowth.message :as message]
    [meowth.role :as role]
-   [meowth.user :as user]))
+   [meowth.user :as user]
+   [meowth.room :as room]
+   [meowth.channel :as channel]))
 
 (defn make-blurb [cfg fields]
   (template/eval (:blurb cfg) fields))
@@ -42,6 +44,7 @@
     :unmessaged (remove :messaged? (map #(user/gen-fields cfg %) (gather/get-all-users cfg)))))
 
 (def conf (-> "conf.edn" parse-conf add-bot-dms-to-cfg add-bot-dms-to-cfg))
+(def rooms (gather/get-user-rooms conf (:id conf)))
 
 (defn -main
   "Based on the config, do the thing!"

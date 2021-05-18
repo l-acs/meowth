@@ -25,7 +25,13 @@
   (->> name (rocket-get cfg "channels.info" "roomName") response-body :channel :_id))
 
 (defn get-user-rooms [cfg id]
-  (map :rid (:rooms (:user (response-body (rocket-get cfg "users.info" "userId" id "fields" "{\"userRooms\": 1}"))))))
+  (-> cfg
+      (rocket-get "users.info" "userId" id "fields" "{\"userRooms\": 1}")
+      response-body
+      :user
+      :rooms))
+;; todo: memoize
 
 (defn get-user-dms [cfg id]
-  (filter #(= (count %) 34) (get-user-rooms cfg id)))
+  (filter
+   #(= (:t %) "d") (get-user-rooms cfg id)))
