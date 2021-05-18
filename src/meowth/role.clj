@@ -5,6 +5,26 @@
    [meowth.gather :as gather]
    [meowth.user :as user]))
 
+(defn list-roles [cfg]
+  (:roles (response-body
+           (rocket-get cfg "roles.list"))))
+
+(defn list-users-in-role [cfg role]
+  (response-body
+   (rocket-get cfg "roles.getUsersInRole" "role" role)))
+
+(defn get-matching-roles-info
+  "Get information about any roles whose given trait matches a particular value"
+  [cfg k v]
+  (filter #(= (k %) v)
+        (list-roles cfg)))
+
+(defn get-role-info
+  "Get information about the role with a given id."
+  [cfg id]
+  (first
+   (get-matching-roles-info cfg :_id id)))
+
 (defn create-role
   "Create a role with a name (for the system, e.g. 'bot')  and a description (what will be shown, e.g 'Bot')"
   [cfg name description]
