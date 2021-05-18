@@ -4,7 +4,8 @@
   (:require
    [clojure.string :as str]
    [clojure.set :as set]
-   [meowth.gather :as gather]))
+   [meowth.gather :as gather]
+   [meowth.user :as user]))
 
 (defn get-channel-info [cfg channel-name]
   (response-body
@@ -15,3 +16,23 @@
        (gather/get-rid-from-channel-name cfg)
        (rocket-post cfg "channels.addAll" "roomId")
        response-body))
+
+(defn _remove-leader [cfg userid rid]
+  (rocket-post cfg "channels.removeLeader"
+               "userId" userid
+               "roomId" rid))
+
+(defn _add-leader [cfg userid rid]
+  (rocket-post cfg "channels.addLeader"
+               "userId" userid
+               "roomId" rid))
+
+(defn remove-leader [cfg user-rooms channel-name username]
+  (_remove-leader cfg
+               (user/get-id-from-username cfg username)
+               (gather/get-rid-from-channel-name cfg user-rooms channel-name)))
+
+(defn add-leader [cfg user-rooms channel-name username]
+  (_add-leader cfg
+               (user/get-id-from-username cfg username)
+               (gather/get-rid-from-channel-name cfg user-rooms channel-name)))
