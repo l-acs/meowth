@@ -3,9 +3,33 @@
   (:refer meowth.rest)
   (:require
    [clj-http.client :as client]
-   [clojure.string :as str]))
+   [clojure.string :as str]
+   [meowth.user :as u]))
 
-(defn post-message [cfg room msg]
+(defn send-message-to-rid [cfg msg rid]
+  (-> cfg
+      (rocket-post-new
+       "chat.sendMessage"
+       :message { :rid rid :msg msg })))
+
+  ;; (client/post
+  ;;  (rocket-gen-url cfg "chat.postMessage")
+  ;;  (assoc (headers cfg) :form-params {:channel room :text msg :content-type :json})))
+
+(defn send-message-to-user [cfg msg username]
+  (->> username
+       (u/get-dm-info cfg)
+       :rid
+       (send-message-to-rid cfg msg)))
+
+(defn send-message-to-user-fast [cfg rooms msg username] ;; this doesn't bother to get a user's rooms each time; it takes them as an argument
+  (->> username
+       (u/dm-info-fast cfg rooms)
+       :rid
+       (send-message-to-rid cfg msg)))
+
+
+(defn post-message [cfg room msg] ;; 'you must be logged in to do this', despite being logged in
   (client/post
    (rocket-gen-url cfg "chat.postMessage")
    (assoc (headers cfg) :form-params {:channel room :text msg :content-type :json})))
@@ -26,7 +50,7 @@
     (Thread/sleep (calculate-message-type-time msg (:wpm cfg)))
     (post-message cfg (str "@" username) msg)))
 
-(defn send-blurb-to-user [cfg username msg]
+(defn send-blurb-to-user [cfg username msg] ;; this should be based on "send message to user" which doesn't yet exist
   (if (:send-paragraphs-as-separate-messages cfg)
     (run! #(delay-send-message cfg username %) (str/split msg #"\n\n"))
     (post-message cfg (str "@" username) msg)))
