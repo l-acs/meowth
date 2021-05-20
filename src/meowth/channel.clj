@@ -7,32 +7,32 @@
    [meowth.gather :as gather]
    [meowth.user :as user]))
 
-(defn get-channel-info [cfg channel-name]
+(defn get-channel-info [channel-name]
   (response-body
-   (rocket-get cfg "channels.info" "roomName" channel-name)))
+   (rocket-get "channels.info" "roomName" channel-name)))
 
-(defn add-all [cfg channel-name]
+(defn add-all [channel-name]
   (->> channel-name
-       (gather/get-rid-from-channel-name cfg)
-       (rocket-post cfg "channels.addAll" "roomId")
+       (gather/get-rid-from-channel-name)
+       (rocket-post "channels.addAll" "roomId")
        response-body))
 
-(defn _remove-leader [cfg userid rid]
-  (rocket-post cfg "channels.removeLeader"
+(defn _remove-leader [userid rid]
+  (rocket-post "channels.removeLeader"
                "userId" userid
                "roomId" rid))
 
-(defn _add-leader [cfg userid rid]
-  (rocket-post cfg "channels.addLeader"
+(defn _add-leader [userid rid]
+  (rocket-post "channels.addLeader"
                "userId" userid
                "roomId" rid))
 
-(defn remove-leader [cfg user-rooms channel-name username]
-  (_remove-leader cfg
-               (user/get-id-from-username cfg username)
-               (gather/get-rid-from-channel-name cfg user-rooms channel-name)))
+(defn remove-leader [channel-name username]
+  (_remove-leader
+                  (user/get-id-from-username username)
+                  (gather/get-rid-from-channel-name channel-name)))
 
-(defn add-leader [cfg user-rooms channel-name username]
-  (_add-leader cfg
-               (user/get-id-from-username cfg username)
-               (gather/get-rid-from-channel-name cfg user-rooms channel-name)))
+(defn add-leader [channel-name username]
+  (_add-leader
+               (user/get-id-from-username username)
+               (gather/get-rid-from-channel-name channel-name)))
