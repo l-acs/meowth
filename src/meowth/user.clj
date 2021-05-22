@@ -1,6 +1,7 @@
 (ns meowth.user
   (:gen-class)
-  (:use [meowth.rest :only [rocket-get response-body]])
+  (:use [meowth.rest :only [rocket-get response-body]]
+        [meowth.config :only [*config*]])
   (:require
    [clojure.string :as str]
    [clojure.set :as set]
@@ -8,22 +9,22 @@
 
 ;; this is probably mostly all bad
 
-(defn get-data-from-username [cfg username]
-  (->> username (rocket-get cfg "users.info" "username") response-body :user))
+(defn get-data-from-username [username]
+  (->> username (rocket-get "users.info" "username") response-body :user))
 
-(defn get-id-from-username [cfg username]
-  (->> username (get-data-from-username cfg) :_id))
+(defn get-id-from-username [username]
+  (->> username (get-data-from-username) :_id))
 
-(defn get-dm-info [cfg username]
+(defn get-dm-info [username]
   (first
    (filter #(= (:name %) username)
-           (g/get-user-dms cfg (:id cfg)))))
+           (g/get-user-dms (:id *config*)))))
 
-(defn dm-info-fast [cfg rooms username]
+(defn dm-info-fast [rooms username]
   (first
    (filter #(= (:name %) username) rooms)))
 
-(defn messaged? [cfg dms id] ;; hm, probably make this nicer
+(defn messaged? [dms id] ;; hm, probably make this nicer
   (some? (seq (filter #(re-matches (re-pattern (str ".*" id ".*")) %) dms))))
 
 (defn email [user]
@@ -59,16 +60,16 @@
 
 (defn channel-groups-hashmap
   "Given a user and the config, return a hashmap containing, for each channel group, a key/value pair of that group name and the subset of those channels of which the user is a member"
-  [cfg user]
+  [user]
   (into {}
         (map
          (fn [[grpname channelids]]
            [grpname (joined-channels-list user channelids)])
-         (cfg :channel-groups-ids))))
+         (:channel-groups-ids *config*))))
 
 (defn gen-fields
   "Template-able info for a user"
-  [cfg user]
+  [user]
   {
    :first-name (first-name user)
    :email (email user)
@@ -78,8 +79,8 @@
    :self-set-name (self-set-name user)
    :timezone (:utcOffset user)
    :connection (:statusConnection user)
-   :channel-groups (channel-groups-hashmap cfg user)
-   :messaged? (messaged? cfg (:dms cfg) (:_id user))
+   :channel-groups (channel-groups-hashmap user)
+   :messaged? (messaged? (:dms *config*) (:_id user))
    :__all user ; still include _all_ info in the `user` hashmap, in case
    })
 

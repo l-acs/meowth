@@ -7,40 +7,41 @@
    [meowth.gather :as gather]
    [meowth.user :as user]))
 
-(defn get-room-id [cfg user-rooms channel-name] ;; this already exists elsewhere
+;; potentially misleading with a `with-config` call because it relies on `user-rooms`, not an actual API call
+;; to simulate using a different config, just pass an appropriate `user-rooms`, as expected
+(defn get-room-id [user-rooms room-name] ;; this already exists elsewhere
   (->> user-rooms
        (filter
-        #(= (:name %) channel-name))
+        #(= (:name %) room-name))
        first
        :rid))
 
-(defn _invite-user-to-group [cfg userid rid]
-  (rocket-post cfg "groups.invite"
+(defn _invite-user-to-group [userid rid]
+  (rocket-post "groups.invite"
                "userId" userid
                "roomId" rid))
 
-(defn invite-user-to-group [cfg user-rooms username group]
-  (_invite-user-to-group cfg
-               (user/get-id-from-username cfg username)
-               (get-room-id cfg user-rooms group)))
+(defn invite-user-to-group [user-rooms username group]
+  (_invite-user-to-group
+               (user/get-id-from-username username)
+               (get-room-id user-rooms group)))
 
-
-(defn _remove-leader [cfg userid rid]
-  (rocket-post cfg "groups.removeLeader"
+(defn _remove-leader [userid rid]
+  (rocket-post "groups.removeLeader"
                "userId" userid
                "roomId" rid))
 
-(defn _add-leader [cfg userid rid]
-  (rocket-post cfg "groups.addLeader"
+(defn _add-leader [userid rid]
+  (rocket-post "groups.addLeader"
                "userId" userid
                "roomId" rid))
 
-(defn remove-leader [cfg user-rooms channel-name username]
-  (_remove-leader cfg
-               (user/get-id-from-username cfg username)
-               (get-room-id cfg user-rooms channel-name)))
+(defn remove-leader [user-rooms room-name username]
+  (_remove-leader
+               (user/get-id-from-username username)
+               (get-room-id user-rooms room-name)))
 
-(defn add-leader [cfg user-rooms channel-name username]
-  (_add-leader cfg
-               (user/get-id-from-username cfg username)
-               (get-room-id cfg user-rooms channel-name)))
+(defn add-leader [user-rooms room-name username]
+  (_add-leader
+               (user/get-id-from-username username)
+               (get-room-id user-rooms room-name)))

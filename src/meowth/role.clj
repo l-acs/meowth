@@ -5,50 +5,50 @@
    [meowth.gather :as gather]
    [meowth.user :as user]))
 
-(defn list-roles [cfg]
+(defn get-roles []
   (:roles (response-body
-           (rocket-get cfg "roles.list"))))
+           (rocket-get "roles.list"))))
 
-(defn list-users-in-role [cfg role]
+(defn get-users-in-role [role]
   (response-body
-   (rocket-get cfg "roles.getUsersInRole" "role" role)))
+   (rocket-get "roles.getUsersInRole" "role" role)))
 
-(defn get-matching-roles-info
+(defn get-matching-roles
   "Get information about any roles whose given trait matches a particular value"
-  [cfg k v]
+  [k v]
   (filter #(= (k %) v)
-        (list-roles cfg)))
+        (get-roles)))
 
-(defn get-role-info
+(defn get-role
   "Get information about the role with a given id."
-  [cfg id]
+  [id]
   (first
-   (get-matching-roles-info cfg :_id id)))
+   (get-matching-roles :_id id)))
 
 (defn create-role
   "Create a role with a name (for the system, e.g. 'bot')  and a description (what will be shown, e.g 'Bot')"
-  [cfg name description]
-  (rocket-post cfg "roles.create" "name" name "description" description))
+  [name description]
+  (rocket-post "roles.create" "name" name "description" description))
 
-(defn give-user-role [cfg username role]
-  (rocket-post cfg "roles.addUserToRole" "roleName" role "username" username))
+(defn give-user-role [username role]
+  (rocket-post "roles.addUserToRole" "roleName" role "username" username))
 
-(defn _channel-add-owner [cfg username rid]
-  (rocket-post cfg "channels.addOwner"
-               "userId" (user/get-id-from-username cfg username)
+(defn _channel-add-owner [username rid]
+  (rocket-post "channels.addOwner"
+               "userId" (user/get-id-from-username username)
                "roomId" rid))
 
-(defn _channel-remove-owner [cfg username rid]
-  (rocket-post cfg "channels.removeOwner"
-               "userId" (user/get-id-from-username cfg username)
+(defn _channel-remove-owner [username rid]
+  (rocket-post "channels.removeOwner"
+               "userId" (user/get-id-from-username username)
                "roomId" rid))
 
-(defn channel-add-owner [cfg username channelname]
-  (rocket-post cfg "channels.addOwner"
-               "userId" (user/get-id-from-username cfg username)
-               "roomId" (gather/get-rid-from-channel-name cfg channelname)))
+(defn channel-add-owner [username channelname]
+  (rocket-post "channels.addOwner"
+               "userId" (user/get-id-from-username username)
+               "roomId" (gather/get-rid-from-channel-name channelname)))
 
-(defn channel-remove-owner [cfg username channelname]
-  (rocket-post cfg "channels.removeOwner"
-               "userId" (user/get-id-from-username cfg username)
-               "roomId" (gather/get-rid-from-channel-name cfg channelname)))
+(defn channel-remove-owner [username channelname]
+  (rocket-post "channels.removeOwner"
+               "userId" (user/get-id-from-username username)
+               "roomId" (gather/get-rid-from-channel-name channelname)))

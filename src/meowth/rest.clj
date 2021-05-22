@@ -1,34 +1,50 @@
 (ns meowth.rest
   (:gen-class)
+  (:use [meowth.config :only [*config*]])
   (:require
    [clj-http.client :as client]
    [cheshire.core :as json]
    [clojure.string :as str]))
 
-(defn headers [cfg]
-  {"X-Auth-Token" (:token cfg),
-   "X-User-Id" (:id cfg),
+(defn headers []
+  {"X-Auth-Token" (:token *config*),
+   "X-User-Id" (:id *config*),
    "Content-type" "application/json"})
 
-(defn rocket-gen-url [cfg call & args]
-  (str (cfg :url)  "/api/v1/" call
-    (when args (->> args conj (partition 2) (map (fn [[x y]] (str x "=" y))) (str/join "&") (str "?"))))) ;; maybe don't do this
+;; (defn rocket-gen-url [cfg call & args]
+;;   (str (cfg :url)  "/api/v1/" call
+;;     (when args (->> args conj (partition 2) (map (fn [[x y]] (str x "=" y))) (str/join "&") (str "?"))))) ;; maybe don't do this
 
-(defn rocket-get [cfg call & args]
+(defn rocket-gen-url [url method]
+  (str url "/api/v1/" method))
+
+;; (defn rocket-url [url call & args]
+;;   (str url  "/api/v1/" call
+;;     (when args (->> args conj (partition 2) (map (fn [[x y]] (str x "=" y))) (str/join "&") (str "?"))))) ;; maybe don't do this
+
+
+;; (defn rocket-get [cfg call & args]
+;;   (client/get
+;;    (apply rocket-gen-url cfg call args)
+;;    {:headers (headers cfg)}))
+
+(defn rocket-get [method & args]
   (client/get
-   (apply rocket-gen-url cfg call args)
-   {:headers (headers cfg)}))
+   (rocket-gen-url (:url *config*) method)
+   {:headers (headers)
+    :insecure? true ;; todo: make this optional
+    :query-params (apply hash-map args)}))
 
-(defn rocket-post [cfg call & args]
+(defn rocket-post [method & args]
   (client/post
-   (rocket-gen-url cfg call)
-   {:headers (headers cfg)
+   (rocket-gen-url (:url *config*) method)
+   {:headers (headers)
     :form-params (apply hash-map args)}))
 
-(defn rocket-post-new [cfg call & args]
+(defn rocket-post-new [method & args]
   (client/post
-   (rocket-gen-url cfg call)
-   {:headers (headers cfg)
+   (rocket-gen-url (:url *config*) method)
+   {:headers (headers)
     :form-params (apply hash-map args)
     :content-type :json}))
 

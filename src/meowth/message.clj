@@ -1,38 +1,38 @@
 (ns meowth.message
   (:gen-class)
   (:refer meowth.rest)
+  (:use [meowth.config :only [*config*]])
   (:require
    [clj-http.client :as client]
    [clojure.string :as str]
    [meowth.user :as u]))
 
-(defn send-message-to-rid [cfg msg rid]
-  (-> cfg
-      (rocket-post-new
-       "chat.sendMessage"
-       :message { :rid rid :msg msg })))
+(defn send-message-to-rid [msg rid]
+  (rocket-post-new
+   "chat.sendMessage"
+   :message { :rid rid :msg msg }))
 
   ;; (client/post
   ;;  (rocket-gen-url cfg "chat.postMessage")
   ;;  (assoc (headers cfg) :form-params {:channel room :text msg :content-type :json})))
 
-(defn send-message-to-user [cfg msg username]
+(defn send-message-to-user [msg username]
   (->> username
-       (u/get-dm-info cfg)
+       (u/get-dm-info)
        :rid
-       (send-message-to-rid cfg msg)))
+       (send-message-to-rid msg)))
 
-(defn send-message-to-user-fast [cfg rooms msg username] ;; this doesn't bother to get a user's rooms each time; it takes them as an argument
+(defn send-message-to-user-fast [rooms msg username] ;; this doesn't bother to get a user's rooms each time; it takes them as an argument
   (->> username
-       (u/dm-info-fast cfg rooms)
+       (u/dm-info-fast rooms)
        :rid
-       (send-message-to-rid cfg msg)))
+       (send-message-to-rid msg)))
 
 
-(defn post-message [cfg room msg] ;; 'you must be logged in to do this', despite being logged in
+(defn post-message [room msg] ;; 'you must be logged in to do this', despite being logged in
   (client/post
-   (rocket-gen-url cfg "chat.postMessage")
-   (assoc (headers cfg) :form-params {:channel room :text msg :content-type :json})))
+   (rocket-gen-url (:url *config*) "chat.postMessage")
+   (assoc (headers) :form-params {:channel room :text msg :content-type :json})))
 
 (defn calculate-message-type-time
   "Type message at appropriate WPM delay"
@@ -45,12 +45,13 @@
           milliseconds (* minutes 60000)]
       (long milliseconds))))
 
-(defn delay-send-message [cfg username msg]
+(defn delay-send-message [username msg]
   (do
-    (Thread/sleep (calculate-message-type-time msg (:wpm cfg)))
-    (post-message cfg (str "@" username) msg)))
+    (Thread/sleep (calculate-message-type-time msg (:wpm *config*)))
+    (post-message (str "@" username) msg)))
 
-(defn send-blurb-to-user [cfg username msg] ;; this should be based on "send message to user" which doesn't yet exist
-  (if (:send-paragraphs-as-separate-messages cfg)
-    (run! #(delay-send-message cfg username %) (str/split msg #"\n\n"))
-    (post-message cfg (str "@" username) msg)))
+ ;; todo: rewrite this based on send-message-to-user
+(defn send-blurb-to-user [username msg]
+  (if (:send-paragraphs-as-separate-messages *config*)
+    (run! #(delay-send-message username %) (str/split msg #"\n\n"))
+    (post-message (str "@" username) msg)))

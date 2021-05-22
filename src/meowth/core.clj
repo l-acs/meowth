@@ -1,5 +1,6 @@
 (ns meowth.core
   (:gen-class)
+  (:use [meowth.config :only [*config*]])
   (:refer meowth.rest)
   (:require
    [clojure.edn :as edn]
@@ -13,9 +14,6 @@
 
 (defn make-blurb [cfg fields]
   (template/eval (:blurb cfg) fields))
-
-(defn parse-conf [cfg-file]
-  (-> cfg-file slurp edn/read-string))
 
 (defn add-channel-group-ids-to-cfg
   "Given a config with a :channel-groups field corresponding to a hashmap of groups of channels, add a new field, :channel-groups-ids, where each channel name has been mapped to a channel id."
@@ -43,8 +41,7 @@
     :all (map #(user/gen-fields cfg %) (gather/get-all-users cfg))
     :unmessaged (remove :messaged? (map #(user/gen-fields cfg %) (gather/get-all-users cfg)))))
 
-(def conf (-> "conf.edn" parse-conf add-bot-dms-to-cfg add-bot-dms-to-cfg))
-(def rooms (gather/get-user-rooms conf (:id conf)))
+;; (def conf (-> "ctf.edn" parse-conf add-channel-group-ids-to-cfg add-bot-dms-to-cfg))
 
 (defn -main
   "Based on the config, do the thing!"
