@@ -31,7 +31,12 @@
          :dms (gather/get-user-dms cfg (:id cfg))))
 
 (defn send-blurbs-to-users [cfg userfieldslist]
-  (run! #(future (message/send-blurb-to-user cfg (:username %) (make-blurb cfg %))) userfieldslist))
+  (run!
+   #(future
+      (message/send-blurb
+       (str "@" (:username %))
+       (make-blurb cfg %)))
+   userfieldslist))
 
 (defn decide-users
   "Given a config, come up with the list of users to be messaged"

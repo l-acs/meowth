@@ -24,12 +24,12 @@
           milliseconds (* minutes 60000)]
       (long milliseconds))))
 
-(defn delay-send-message [username msg]
+(defn delay-send-message [room msg]
   (do
     (Thread/sleep (calculate-message-type-time msg (:wpm *config*)))
-    (send-message (str "@" username) msg)))
+    (send-message room msg)))
 
-(defn send-blurb-to-user [username msg]
+(defn send-blurb [room msg]
   (if (:send-paragraphs-as-separate-messages *config*)
-    (run! #(delay-send-message username %) (str/split msg #"\n\n"))
-    (send-message (str "@" username) msg)))
+    (run! #(delay-send-message room %) (str/split msg #"\n\n"))
+    (send-message room msg)))
