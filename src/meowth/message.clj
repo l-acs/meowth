@@ -3,36 +3,15 @@
   (:refer meowth.rest)
   (:use [meowth.config :only [*config*]])
   (:require
-   [clj-http.client :as client]
-   [clojure.string :as str]
-   [meowth.user :as u]))
+   [clojure.string :as str]))
 
-(defn send-message-to-rid [msg rid]
-  (rocket-post-new
-   "chat.sendMessage"
-   :message { :rid rid :msg msg }))
-
-  ;; (client/post
-  ;;  (rocket-gen-url cfg "chat.postMessage")
-  ;;  (assoc (headers cfg) :form-params {:channel room :text msg :content-type :json})))
-
-(defn send-message-to-user [msg username]
-  (->> username
-       (u/get-dm-info)
-       :rid
-       (send-message-to-rid msg)))
-
-(defn send-message-to-user-fast [rooms msg username] ;; this doesn't bother to get a user's rooms each time; it takes them as an argument
-  (->> username
-       (u/dm-info-fast rooms)
-       :rid
-       (send-message-to-rid msg)))
-
-
-(defn post-message [room msg] ;; 'you must be logged in to do this', despite being logged in
-  (client/post
-   (rocket-gen-url (:url *config*) "chat.postMessage")
-   (assoc (headers) :form-params {:channel room :text msg :content-type :json})))
+(defn send-message
+  "Send message to a user directly (where @ is prepended) or to a channel or private group (where # is prepended)"
+  [room msg]
+  (rocket-post
+   "chat.postMessage"
+   :channel room
+   :text msg))
 
 (defn calculate-message-type-time
   "Type message at appropriate WPM delay"
@@ -48,10 +27,9 @@
 (defn delay-send-message [username msg]
   (do
     (Thread/sleep (calculate-message-type-time msg (:wpm *config*)))
-    (post-message (str "@" username) msg)))
+    (send-message (str "@" username) msg)))
 
- ;; todo: rewrite this based on send-message-to-user
 (defn send-blurb-to-user [username msg]
   (if (:send-paragraphs-as-separate-messages *config*)
     (run! #(delay-send-message username %) (str/split msg #"\n\n"))
-    (post-message (str "@" username) msg)))
+    (send-message (str "@" username) msg)))
