@@ -11,22 +11,8 @@
    "X-User-Id" (:id *config*),
    "Content-type" "application/json"})
 
-;; (defn rocket-gen-url [cfg call & args]
-;;   (str (cfg :url)  "/api/v1/" call
-;;     (when args (->> args conj (partition 2) (map (fn [[x y]] (str x "=" y))) (str/join "&") (str "?"))))) ;; maybe don't do this
-
 (defn rocket-gen-url [url method]
   (str url "/api/v1/" method))
-
-;; (defn rocket-url [url call & args]
-;;   (str url  "/api/v1/" call
-;;     (when args (->> args conj (partition 2) (map (fn [[x y]] (str x "=" y))) (str/join "&") (str "?"))))) ;; maybe don't do this
-
-
-;; (defn rocket-get [cfg call & args]
-;;   (client/get
-;;    (apply rocket-gen-url cfg call args)
-;;    {:headers (headers cfg)}))
 
 (defn rocket-get [method & args]
   (client/get
@@ -40,14 +26,6 @@
    (rocket-gen-url (:url *config*) method)
    {:headers (headers)
     :form-params (apply hash-map args)}))
-
-(defn rocket-post-new [method & args]
-  (client/post
-   (rocket-gen-url (:url *config*) method)
-   {:headers (headers)
-    :form-params (apply hash-map args)
-    :content-type :json}))
-
 
 (defn response-body
   "Gets the :body of a response as a hashmap"
