@@ -32,23 +32,3 @@
 
 (defn give-user-role [username role]
   (rocket-post "roles.addUserToRole" "roleName" role "username" username))
-
-(defn _channel-add-owner [username rid]
-  (rocket-post "channels.addOwner"
-               "userId" (user/get-id-from-username username)
-               "roomId" rid))
-
-(defn _channel-remove-owner [username rid]
-  (rocket-post "channels.removeOwner"
-               "userId" (user/get-id-from-username username)
-               "roomId" rid))
-
-(defn channel-add-owner [username channelname]
-  (rocket-post "channels.addOwner"
-               "userId" (user/get-id-from-username username)
-               "roomId" (gather/get-rid-from-channel-name channelname)))
-
-(defn channel-remove-owner [username channelname]
-  (rocket-post "channels.removeOwner"
-               "userId" (user/get-id-from-username username)
-               "roomId" (gather/get-rid-from-channel-name channelname)))

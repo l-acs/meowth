@@ -4,25 +4,9 @@
         [meowth.config :only [*config*]])
   (:require
    [clojure.string :as str]
-   [clojure.set :as set]
-   [meowth.gather :as g]))
+   [clojure.set :as set]))
 
 ;; this is probably mostly all bad
-
-(defn get-data-from-username [username]
-  (->> username (rocket-get "users.info" "username") response-body :user))
-
-(defn get-id-from-username [username]
-  (->> username (get-data-from-username) :_id))
-
-(defn get-dm-info [username]
-  (first
-   (filter #(= (:name %) username)
-           (g/get-user-dms (:id *config*)))))
-
-(defn dm-info-fast [rooms username]
-  (first
-   (filter #(= (:name %) username) rooms)))
 
 (defn messaged? [dms id] ;; hm, probably make this nicer
   (some? (seq (filter #(re-matches (re-pattern (str ".*" id ".*")) %) dms))))
