@@ -8,9 +8,7 @@
    [meowth.gather :as gather]
    [meowth.message :as message]
    [meowth.role :as role]
-   [meowth.user :as user]
-   [meowth.room :as room]
-   [meowth.channel :as channel]))
+   [meowth.user :as user]))
 
 (defn make-blurb [cfg fields]
   (template/eval (:blurb cfg) fields))
