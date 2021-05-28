@@ -59,6 +59,26 @@
       :rooms))
 ;; todo: memoize
 
+(defn get-roles []
+  (:roles (response-body
+           (rocket-get "roles.list"))))
+
+(defn get-users-in-role [role]
+  (response-body
+   (rocket-get "roles.getUsersInRole" "role" role)))
+
+(defn get-matching-roles
+  "Get information about any roles whose given trait matches a particular value"
+  [k v]
+  (filter #(= (k %) v)
+        (get-roles)))
+
+(defn get-role
+  "Get information about the role with a given id."
+  [id]
+  (first
+   (get-matching-roles :_id id)))
+
 (defn get-user-dms [id]
   (filter
    #(= (:t %) "d") (get-user-rooms id)))
