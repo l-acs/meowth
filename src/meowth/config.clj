@@ -16,4 +16,4 @@
   `(binding [*config* ~config]
         ~call))
 
-;; maybe: (def rooms (gather/user-rooms (:id *config*)))
+;; maybe: (def rooms (get/user-rooms (:id *config*)))

@@ -4,11 +4,11 @@
   (:require
    [clojure.string :as str]
    [clojure.set :as set]
-   [meowth.gather :as gather]))
+   [meowth.get :as get]))
 
 (defn add-all [channel-name]
   (->> channel-name
-       (gather/rid-from-channel-name)
+       (get/rid-from-channel-name)
        (rocket-post "channels.addAll" "roomId")
        response-body))
 
@@ -24,14 +24,14 @@
 
 (defn channel-remove-leader [channel-name username]
   (_channel-remove-leader
-   (gather/rid-from-channel-name channel-name)
-   (gather/id-from-username username)))
+   (get/rid-from-channel-name channel-name)
+   (get/id-from-username username)))
 
 
 (defn channel-add-leader [channel-name username]
   (_channel-add-leader
-   (gather/rid-from-channel-name channel-name)
-   (gather/id-from-username username)))
+   (get/rid-from-channel-name channel-name)
+   (get/id-from-username username)))
 
 (defn _channel-add-owner [rid username]
   (rocket-post "channels.addOwner"
@@ -45,13 +45,13 @@
 
 (defn channel-add-owner [channel-name username]
   (_channel-add-owner
-               (gather/rid-from-channel-name channel-name)
-               (gather/id-from-username username)))
+               (get/rid-from-channel-name channel-name)
+               (get/id-from-username username)))
 
 (defn channel-remove-owner [channel-name username]
   (_channel-remove-owner
-               (gather/rid-from-channel-name channel-name)
-               (gather/id-from-username username)))
+               (get/rid-from-channel-name channel-name)
+               (get/id-from-username username)))
 
 (defn _invite-user-to-group [userid rid]
   (rocket-post "groups.invite"
@@ -60,8 +60,8 @@
 
 (defn invite-user-to-group [user-rooms username group]
   (_invite-user-to-group
-               (gather/id-from-username username)
-               (gather/room-id user-rooms group)))
+               (get/id-from-username username)
+               (get/room-id user-rooms group)))
 
 (defn _group-remove-leader [rid userid]
   (rocket-post "groups.removeLeader"
@@ -75,11 +75,11 @@
 
 (defn group-remove-leader [user-rooms room-name username]
   (_group-remove-leader
-               (gather/room-id user-rooms room-name)
-               (gather/id-from-username username)))
+               (get/room-id user-rooms room-name)
+               (get/id-from-username username)))
 
 
 (defn group-add-leader [user-rooms room-name username]
   (_group-add-leader
-               (gather/room-id user-rooms room-name)
-               (gather/id-from-username username)))
+               (get/room-id user-rooms room-name)
+               (get/id-from-username username)))

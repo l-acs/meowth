@@ -1,4 +1,4 @@
-(ns meowth.gather
+(ns meowth.get
   (:gen-class)
   (:refer meowth.rest)
   (:use
