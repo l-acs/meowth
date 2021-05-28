@@ -153,8 +153,7 @@ As mentioned in earlier sections, you must also define a `:blurb` and, optionall
 
 
 
-## Copyright
-
+## License
 Meowth is free software.
 
 
@@ -171,3 +170,6 @@ Public License, v. 2.0 are satisfied: GNU General Public License as published by
 the Free Software Foundation, either version 2 of the License, or (at your
 option) any later version, with the GNU Classpath Exception which is available
 at https://www.gnu.org/software/classpath/license.html.
+
+### Art
+[Art](https://www.newgrounds.com/art/view/d34thmonk3y/space-cat) thanks to d34thmonk3y
