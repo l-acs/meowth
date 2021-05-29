@@ -4,34 +4,34 @@
   (:use
    [meowth.config :only [*config*]]))
 
-(defn channel-info [channel-name]
-  (response-body
-   (rocket-get :channels "info" "roomName" channel-name)))
+(defn info [domain thing]
+  (case domain
+    :users (->> thing
+                (rocket-get :users "info" "username") response-body :user)
+    :groups (->> thing
+                 (rocket-get :groups "info" "roomName") response-body :group)
+    :channels (->> thing
+                   (rocket-get :channels "info" "roomName") response-body :channel)
+    nil))
 
-(defn rid-from-channel-name [name] ;; near duplicate: room-id
-  ;; this works for channels the user is not in
-  ;; but naturally not for private groups the user is not in
-  (->> name channel-info :channel :_id))
+(defn id [domain thing]
+  (:_id (info domain thing)))
 
+(defn _room-id [user-rooms room-name]
+  ;; Potentially misleading with a `with-config` call because it
+  ;; relies on `user-rooms`, not an actual API call. To simulate using
+  ;; a different config, just pass an appropriate `user-rooms` as
+  ;; otherwise expected.
 
+  ;; Naturally this function fails if the user is not in the room. But
+  ;; it works marvelously for any channels, groups, and other
+  ;; rooms (i.e. DMs) the user is in.
 
-;; potentially misleading with a `with-config` call because it relies on `user-rooms`, not an actual API call:
-;; to simulate using a different config, just pass an appropriate `user-rooms`, as expected
-(defn room-id [user-rooms room-name] ;; near duplicate: rid-from-channel-name
-  ;; naturally this fails if the user is not in the room
-  ;; but it works marvelously for rooms the user is in, incl. dms
-  ;; this _does_ work for channels the user _is_ in, though
   (->> user-rooms
        (filter
         #(= (:name %) room-name))
        first
        :rid))
-
-(defn data-from-username [username]
-  (->> username (rocket-get :users "info" "username") response-body :user))
-
-(defn id-from-username [username]
-  (->> username (data-from-username) :_id))
 
 (defn _some [ns method amt offset] ;; there's almost certainly a better way to solve this problem
   (response-body (rocket-get ns method 'count amt 'offset offset))) ;; todo change symbols to enums?
