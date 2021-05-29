@@ -17,22 +17,6 @@
 (defn id [domain thing]
   (:_id (info domain thing)))
 
-(defn _room-id [user-rooms room-name]
-  ;; Potentially misleading with a `with-config` call because it
-  ;; relies on `user-rooms`, not an actual API call. To simulate using
-  ;; a different config, just pass an appropriate `user-rooms` as
-  ;; otherwise expected.
-
-  ;; Naturally this function fails if the user is not in the room. But
-  ;; it works marvelously for any channels, groups, and other
-  ;; rooms (i.e. DMs) the user is in.
-
-  (->> user-rooms
-       (filter
-        #(= (:name %) room-name))
-       first
-       :rid))
-
 (defn _some [ns method amt offset] ;; there's almost certainly a better way to solve this problem
   (response-body (rocket-get ns method 'count amt 'offset offset))) ;; todo change symbols to enums?
 
@@ -87,8 +71,3 @@
   (first
    (filter #(= (:name %) username)
            (user-dms (:id *config*)))))
-
- ;; this 'might should' go elsewhere
-(defn dm-info-fast [rooms username]
-  (first
-   (filter #(= (:name %) username) rooms)))
