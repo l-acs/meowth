@@ -12,73 +12,52 @@
        (rocket-post :channels "addAll" "roomId")
        response-body))
 
-(defn _channel-remove-leader [rid userid]
-  (rocket-post :channels "removeLeader"
+(defn _remove-leader [domain rid userid]
+  (rocket-post domain "removeLeader"
                "userId" userid
                "roomId" rid))
 
-(defn _channel-add-leader [rid userid]
-  (rocket-post :channels "addLeader"
+(defn _add-leader [domain rid userid]
+  (rocket-post domain "addLeader"
                "userId" userid
                "roomId" rid))
 
-(defn channel-remove-leader [channel-name username]
-  (_channel-remove-leader
-   (get/id :channels channel-name)
-   (get/id :users username)))
+(defn remove-leader [domain room username]
+  (_remove-leader domain
+                  (get/id domain room)
+                  (get/id :users username)))
 
-(defn channel-add-leader [channel-name username]
-  (_channel-add-leader
-   (get/id :channels channel-name)
-   (get/id :users username)))
+(defn add-leader [domain room username]
+  (_add-leader domain
+               (get/id domain room)
+               (get/id :users username)))
 
-(defn _channel-add-owner [rid username]
-  (rocket-post :channels "addOwner"
+(defn _add-owner [domain rid username]
+  (rocket-post domain "addOwner"
                "userId" username
                "roomId" rid))
 
-(defn _channel-remove-owner [rid username]
-  (rocket-post :channels "removeOwner"
+(defn _remove-owner [domain rid username]
+  (rocket-post domain "removeOwner"
                "userId" username
                "roomId" rid))
 
-(defn channel-add-owner [channel-name username]
-  (_channel-add-owner
-   (get/id :channels channel-name)
-   (get/id :users username)))
+(defn add-owner [domain room username]
+  (_add-owner domain
+              (get/id domain room)
+              (get/id :users username)))
 
-(defn channel-remove-owner [channel-name username]
-  (_channel-remove-owner
-   (get/id :channels channel-name)
-   (get/id :users username)))
+(defn remove-owner [domain room username]
+  (_remove-owner domain
+                 (get/id domain room)
+                 (get/id :users username)))
 
-(defn _invite-user-to-group [userid rid]
-  (rocket-post :groups "invite"
+(defn _invite-user-to-room [domain userid rid]
+  (rocket-post domain "invite"
                "userId" userid
                "roomId" rid))
 
-(defn invite-user-to-group [username group]
-  (_invite-user-to-group
-   (get/id :users username)
-   (get/id :groups group)))
-
-(defn _group-remove-leader [rid userid]
-  (rocket-post :groups "removeLeader"
-               "userId" userid
-               "roomId" rid))
-
-(defn _group-add-leader [rid userid]
-  (rocket-post :groups "addLeader"
-               "userId" userid
-               "roomId" rid))
-
-(defn group-remove-leader [group-name username]
-  (_group-remove-leader
-   (get/id :groups group-name)
-   (get/id :users username)))
-
-
-(defn group-add-leader [group-name username]
-  (_group-add-leader
-   (get/id :groups group-name)
-   (get/id :users username)))
+(defn invite-user-to-room [domain username group]
+  (_invite-user-to-room domain
+                        (get/id :users username)
+                        (get/id domain group)))
