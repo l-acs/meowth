@@ -14,9 +14,13 @@
 (defn rocket-gen-url [url method]
   (str url "/api/v1/" method))
 
-(defn rocket-get [method & args]
+(defn rocket-url [url ns method]
+  (str url "/api/v1/"
+       (name ns) "." (name method)))
+
+(defn rocket-get [ns method & args]
   (client/get
-   (rocket-gen-url (:url *config*) method)
+   (rocket-url (:url *config*) ns method)
    {:headers (headers)
     :insecure? true ;; todo: make this optional
     :query-params (apply hash-map args)}))
