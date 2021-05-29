@@ -1,7 +1,6 @@
 (ns meowth.user
   (:gen-class)
-  (:use [meowth.rest :only [rocket-get response-body]]
-        [meowth.config :only [*config*]])
+  (:use [meowth.config :only [*config*]])
   (:require
    [clojure.string :as str]
    [clojure.set :as set]))
@@ -67,8 +66,3 @@
    :messaged? (messaged? (:dms *config*) (:_id user))
    :__all user ; still include _all_ info in the `user` hashmap, in case
    })
-
-
-;; note about cfg: the objective is to make a function that, when
-;; called on a namespace, will evaluate all of its functions as a
-;; second version which takes an additional `cfg` argument

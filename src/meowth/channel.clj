@@ -9,18 +9,18 @@
 (defn add-all [channel-name]
   (->> channel-name
        (get/id :channels channel-name)
-       (rocket-post :channels "addAll" "roomId")
+       (rocket-post :channels "addAll" :roomId)
        response-body))
 
 (defn _remove-leader [domain rid userid]
   (rocket-post domain "removeLeader"
-               "userId" userid
-               "roomId" rid))
+               :userId userid
+               :roomId rid))
 
 (defn _add-leader [domain rid userid]
   (rocket-post domain "addLeader"
-               "userId" userid
-               "roomId" rid))
+               :userId userid
+               :roomId rid))
 
 (defn remove-leader [domain room username]
   (_remove-leader domain
@@ -34,13 +34,13 @@
 
 (defn _add-owner [domain rid username]
   (rocket-post domain "addOwner"
-               "userId" username
-               "roomId" rid))
+               :userId username
+               :roomId rid))
 
 (defn _remove-owner [domain rid username]
   (rocket-post domain "removeOwner"
-               "userId" username
-               "roomId" rid))
+               :userId username
+               :roomId rid))
 
 (defn add-owner [domain room username]
   (_add-owner domain
@@ -54,8 +54,8 @@
 
 (defn _invite-user-to-room [domain userid rid]
   (rocket-post domain "invite"
-               "userId" userid
-               "roomId" rid))
+               :userId userid
+               :roomId rid))
 
 (defn invite-user-to-room [domain username group]
   (_invite-user-to-room domain

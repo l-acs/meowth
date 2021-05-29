@@ -7,18 +7,18 @@
 (defn info [domain thing]
   (case domain
     :users (->> thing
-                (rocket-get :users "info" "username") response-body :user)
+                (rocket-get :users "info" :username) response-body :user)
     :groups (->> thing
-                 (rocket-get :groups "info" "roomName") response-body :group)
+                 (rocket-get :groups "info" :roomName) response-body :group)
     :channels (->> thing
-                   (rocket-get :channels "info" "roomName") response-body :channel)
+                   (rocket-get :channels "info" :roomName) response-body :channel)
     nil))
 
 (defn id [domain thing]
   (:_id (info domain thing)))
 
 (defn _some [ns method amt offset] ;; there's almost certainly a better way to solve this problem
-  (response-body (rocket-get ns method 'count amt 'offset offset))) ;; todo change symbols to enums?
+  (response-body (rocket-get ns method :count amt :offset offset)))
 
 (defn _all [ns method field]
   (defn _help [acc amt offset]
@@ -37,7 +37,9 @@
   (_all :channels "list" :channels))
 
 (defn user-rooms [id]
-  (-> (rocket-get :users "info" "userId" id "fields" "{\"userRooms\": 1}")
+  (-> (rocket-get :users "info"
+                  :userId id
+                  :fields "{\"userRooms\": 1}") ;; todo: make this not take json as a string! maybe look into putting chesire.core/encode for all of rocket-get args in its definition?
       response-body
       :user
       :rooms))
@@ -49,7 +51,7 @@
 
 (defn users-in-role [role]
   (response-body
-   (rocket-get :roles "getUsersInRole" "role" role)))
+   (rocket-get :roles "getUsersInRole" :role role)))
 
 (defn matching-roles
   "Get information about any roles whose given trait matches a particular value"
