@@ -11,9 +11,6 @@
    "X-User-Id" (:id *config*),
    "Content-type" "application/json"})
 
-(defn rocket-gen-url [url method]
-  (str url "/api/v1/" method))
-
 (defn rocket-url [url ns method]
   (str url "/api/v1/"
        (name ns) "." (name method)))
@@ -25,9 +22,9 @@
     :insecure? true ;; todo: make this optional
     :query-params (apply hash-map args)}))
 
-(defn rocket-post [method & args]
+(defn rocket-post [ns method & args]
   (client/post
-   (rocket-gen-url (:url *config*) method)
+   (rocket-url (:url *config*) ns method)
    {:headers (headers)
     :form-params (apply hash-map args)}))
 

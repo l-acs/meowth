@@ -9,7 +9,7 @@
   "Send message to a user directly (where @ is prepended) or to a channel or private group (where # is prepended)"
   [room msg]
   (rocket-post
-   "chat.postMessage"
+   :chat "postMessage"
    :channel room
    :text msg))
 

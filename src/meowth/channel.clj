@@ -9,16 +9,16 @@
 (defn add-all [channel-name]
   (->> channel-name
        (get/rid-from-channel-name)
-       (rocket-post "channels.addAll" "roomId")
+       (rocket-post :channels "addAll" "roomId")
        response-body))
 
 (defn _channel-remove-leader [rid userid]
-  (rocket-post "channels.removeLeader"
+  (rocket-post :channels "removeLeader"
                "userId" userid
                "roomId" rid))
 
 (defn _channel-add-leader [rid userid]
-  (rocket-post "channels.addLeader"
+  (rocket-post :channels "addLeader"
                "userId" userid
                "roomId" rid))
 
@@ -34,12 +34,12 @@
    (get/id-from-username username)))
 
 (defn _channel-add-owner [rid username]
-  (rocket-post "channels.addOwner"
+  (rocket-post :channels "addOwner"
                "userId" username
                "roomId" rid))
 
 (defn _channel-remove-owner [rid username]
-  (rocket-post "channels.removeOwner"
+  (rocket-post :channels "removeOwner"
                "userId" username
                "roomId" rid))
 
@@ -54,7 +54,7 @@
                (get/id-from-username username)))
 
 (defn _invite-user-to-group [userid rid]
-  (rocket-post "groups.invite"
+  (rocket-post :groups "invite"
                "userId" userid
                "roomId" rid))
 
@@ -64,12 +64,12 @@
                (get/room-id user-rooms group)))
 
 (defn _group-remove-leader [rid userid]
-  (rocket-post "groups.removeLeader"
+  (rocket-post :groups "removeLeader"
                "userId" userid
                "roomId" rid))
 
 (defn _group-add-leader [rid userid]
-  (rocket-post "groups.addLeader"
+  (rocket-post :groups "addLeader"
                "userId" userid
                "roomId" rid))
 
