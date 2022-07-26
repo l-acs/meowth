@@ -1,3 +1,8 @@
 *~
 *#*
 target/
+.lein-repl-history
+.nrepl-port
+*.edn
+*.log
+*.js
