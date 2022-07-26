@@ -1,12 +1,12 @@
 (ns meowth.core
   (:gen-class)
-  (:use [meowth.config :only [*config*]])
-  (:refer meowth.rest)
   (:require
    [clojure.edn :as edn]
    [comb.template :as template]
+   [meowth.config :refer [*config* with-config]]
    [meowth.get :as get]
    [meowth.message :as message]
+   [meowth.rest :refer :all]
    [meowth.role :as role]
    [meowth.user :as user]))
 

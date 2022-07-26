@@ -1,8 +1,8 @@
 (ns meowth.get
   (:gen-class)
-  (:refer meowth.rest)
-  (:use
-   [meowth.config :only [*config*]]))
+  (:require
+   [meowth.rest :refer :all]
+   [meowth.config :refer [*config*]]))
 
 (defn info [domain thing]
   (case domain
