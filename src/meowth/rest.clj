@@ -11,9 +11,13 @@
    "X-User-Id" (:id *config*),
    "Content-type" "application/json"})
 
-(defn rocket-url [url ns method]
-  (str url "/api/v1/"
-       (name ns) "." (name method)))
+(defn rocket-url
+  "Generate urls for RocketChat endpoints. method may be nil but must be
+  passed explicitly"
+  [url ns method]
+  (str url "/api/v1/" (name ns)
+   (when method
+     (str "." (name method)))))
 
 (defn rocket-get [ns method & args]
   (client/get

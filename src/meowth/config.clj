@@ -15,5 +15,3 @@
 (defmacro with-config [config call]
   `(binding [*config* ~config]
         ~call))
-
-;; maybe: (def rooms (get/user-rooms (:id *config*)))

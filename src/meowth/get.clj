@@ -7,7 +7,7 @@
 (defn info [domain thing]
   (case domain
     :users (->> thing
-                (rocket-get :users "info" :username) response-body :user)
+                (rocket-get :users "info" :fields "{\"userRooms\": 1}" :username) response-body :user)
     :groups (->> thing
                  (rocket-get :groups "info" :roomName) response-body :group)
     :channels (->> thing
@@ -15,6 +15,7 @@
     nil))
 
 (defn id [domain thing]
+  ;; e.g. (get/id :channels "wg-collab")
   (:_id (info domain thing)))
 
 (defn _some [ns method amt offset] ;; there's almost certainly a better way to solve this problem
@@ -30,20 +31,13 @@
         (_help acc amt (+ offset amt)))))
   (_help '() 100 0))
 
-(defn all-users []
+;; todo: maybe unify `users`, `channels`, `roles` as `all`
+
+(defn users []
   (_all :users "list" :users))
 
-(defn all-channels []
+(defn channels []
   (_all :channels "list" :channels))
-
-(defn user-rooms [id]
-  (-> (rocket-get :users "info"
-                  :userId id
-                  :fields "{\"userRooms\": 1}") ;; todo: make this not take json as a string! maybe look into putting chesire.core/encode for all of rocket-get args in its definition?
-      response-body
-      :user
-      :rooms))
-;; todo: memoize
 
 (defn roles []
   (:roles (response-body
@@ -64,12 +58,3 @@
   [id]
   (first
    (matching-roles :_id id)))
-
-(defn user-dms [id]
-  (filter
-   #(= (:t %) "d") (user-rooms id)))
-
-(defn dm-info [username]
-  (first
-   (filter #(= (:name %) username)
-           (user-dms (:id *config*)))))

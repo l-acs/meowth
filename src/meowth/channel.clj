@@ -6,58 +6,38 @@
    [clojure.set :as set]
    [meowth.get :as get]))
 
+;; encourage abstraction and reuse by only using full-fledged
+;; user (constructed with gen-fields) -- not ids or usernames on
+;; their own
+;; todo: maybe do similarly using full-fledged templatable room info
+
 (defn add-all [channel-name]
   (->> channel-name
        (get/id :channels channel-name)
        (rocket-post :channels "addAll" :roomId)
        response-body))
 
-(defn _remove-leader [domain rid userid]
-  (rocket-post domain "removeLeader"
-               :userId userid
-               :roomId rid))
-
-(defn _add-leader [domain rid userid]
+(defn add-leader [domain room-name user]
   (rocket-post domain "addLeader"
-               :userId userid
-               :roomId rid))
+               :userId (:_id user) ;; user is a full-fledged user.clj gen-fields
+               :roomId (get/id domain room-name)))
 
-(defn remove-leader [domain room username]
-  (_remove-leader domain
-                  (get/id domain room)
-                  (get/id :users username)))
+(defn remove-leader [domain room-name user]
+  (rocket-post domain "removeLeader"
+               :userId (:_id user)
+               :roomId (get/id domain room-name)))
 
-(defn add-leader [domain room username]
-  (_add-leader domain
-               (get/id domain room)
-               (get/id :users username)))
-
-(defn _add-owner [domain rid username]
+(defn add-owner [domain room-name user]
   (rocket-post domain "addOwner"
-               :userId username
-               :roomId rid))
+               :userId (:_id user)
+               :roomId (get/id domain room-name)))
 
-(defn _remove-owner [domain rid username]
+(defn remove-owner [domain room-name user]
   (rocket-post domain "removeOwner"
-               :userId username
-               :roomId rid))
+               :userId (:_id user)
+               :roomId (get/id domain room-name)))
 
-(defn add-owner [domain room username]
-  (_add-owner domain
-              (get/id domain room)
-              (get/id :users username)))
-
-(defn remove-owner [domain room username]
-  (_remove-owner domain
-                 (get/id domain room)
-                 (get/id :users username)))
-
-(defn _invite-user-to-room [domain userid rid]
+(defn invite-user-to-room [domain room-name user]
   (rocket-post domain "invite"
-               :userId userid
-               :roomId rid))
-
-(defn invite-user-to-room [domain username group]
-  (_invite-user-to-room domain
-                        (get/id :users username)
-                        (get/id domain group)))
+               :userId (:_id user)
+               :roomId (get/id domain room-name)))
