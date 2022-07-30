@@ -6,12 +6,21 @@
 
 (defn info [domain thing]
   (case domain
-    :users (->> thing
-                (rocket-get :users "info" :fields "{\"userRooms\": 1}" :username) response-body :user)
-    :groups (->> thing
-                 (rocket-get :groups "info" :roomName) response-body :group)
-    :channels (->> thing
-                   (rocket-get :channels "info" :roomName) response-body :channel)
+    (:user :users)
+      (->> thing
+           (rocket-get :users "info" :fields "{\"userRooms\": 1}" :username)
+           response-body
+           :user)
+    (:group :groups)
+      (->> thing
+           (rocket-get :groups "info" :roomName)
+           response-body
+           :group)
+    (:channel :channels)
+      (->> thing
+           (rocket-get :channels "info" :roomName)
+           response-body
+           :channel)
     nil))
 
 (defn id [domain thing]
