@@ -3,7 +3,6 @@
   (:use [meowth.rest :only [rocket-post response-body]])
   (:require
    [clojure.string :as str]
-   [clojure.set :as set]
    [meowth.get :as get]
    [meowth.user :refer [capitalize-first-letter]]))
 
@@ -11,6 +10,24 @@
 ;; user (constructed with gen-fields) -- not ids or usernames on
 ;; their own
 ;; todo: maybe do similarly using full-fledged templatable room info
+
+(defn create [channel-name]
+  (response-body
+   (rocket-post :channels "create" :name channel-name)))
+
+(defn delete [channel-name]
+  (response-body
+   (rocket-post :channels "delete" :roomName channel-name)))
+
+(defn rename [channel-old-name channel-new-name]
+  (let [id (get/id :channels channel-old-name)]
+    (response-body
+     (rocket-post :channels "rename" :roomId id :name channel-new-name))))
+
+(defn set-default [channel-name default?]
+  (let [id (get/id :channels channel-name)]
+    (response-body
+     (rocket-post :channels "setDefault" :roomId id :default default?))))
 
 (defn add-all [channel-name]
   (->> channel-name
@@ -24,16 +41,15 @@
                :roomId (get/id domain room-name)))
 
 (defn modify-user-in-room
-  ;; user is a full set of user fields (from gen-fields, from
+  ;; `user` is a full set of user fields (from gen-fields, from
   ;; get/info), e.g.
 
   ;; {:_id "qFG4...", :name "Luc", :rooms [...], etc. }
 
-  ;; operation is :add or :remove
-  ;; status is :leader or :owner
+  ;; `operation` is :add or :remove
+  ;; `status` is :leader or :owner
+  ;; `domain` is :channels or :groups
 
-  ;; room-name is name, not id
-  ;; domain is :channels or :groups
   [user operation status domain room-name]
 
   (let [operation (name operation)
@@ -42,3 +58,10 @@
     (rocket-post domain verb
                  :userId (:id user)
                  :roomId (get/id domain room-name))))
+
+(comment
+  (meowth.channel/create "meowth-test-3")
+  (meowth.channel/set-default "meowth-test-3" true)
+  (meowth.channel/rename "meowth-test-3" "meowth-test-4")
+  (meowth.channel/set-default "meowth-test-4" true)
+  (meowth.channel/delete "meowth-test-4"))
