@@ -4,20 +4,31 @@
   (:require
    [clojure.string :as str]
    [meowth.get :as get]
+   [meowth.cache :as cache]
    [meowth.user :refer [capitalize-first-letter]]))
 
 ;; encourage abstraction and reuse by only using full-fledged
 ;; user (constructed with gen-fields) -- not ids or usernames on
 ;; their own
 
+(defn exists? [channel-name]
+  (some
+   #(= (% :name) channel-name)
+   @cache/channels))
+
 
 (defn create [channel-name]
-  (response-body
-   (rocket-post :channels "create" :name channel-name)))
+  (when-not (exists? channel-name)
+    (response-body
+     (rocket-post :channels "create" :name channel-name))))
 
 (defn delete [channel-name]
-  (response-body
-   (rocket-post :channels "delete" :roomName channel-name)))
+  ;; this and the above are still prone to throwing an execution
+  ;; error, if we delete (or create) a channel multiple times since
+  ;; the cache was last updated
+  (when (exists? channel-name)
+    (response-body
+     (rocket-post :channels "delete" :roomName channel-name))))
 
 (defn rename [channel-old-name channel-new-name]
   (let [id (get/id :channels channel-old-name)]

@@ -3,7 +3,8 @@
   (:use [meowth.config :only [*config*]])
   (:require
    [clojure.string :as str]
-   [clojure.set :as set]))
+   [clojure.set :as set]
+   [meowth.get :as get]))
 
 ;; a note on parameter naming:
 ;; `username` is just the username
@@ -30,8 +31,8 @@
 
 (defn rooms-by-type [user-info as-key]
   ;; "d" (:direct), "c" (:channel), "p" (:private)
-  (let [swapped       {:channel "c" :direct "d" :private "p"}
-        room-type  (get swapped as-key)]
+  (let [swapped   {:channel "c" :direct "d" :private "p"}
+        room-type (get swapped as-key)]
     (->> user-info
          :rooms
          (filter #(= (:t %) room-type))
@@ -90,3 +91,21 @@
    :messaged? (messaged? (:dms *config*) (:username user-info))
    :__all user-info ;; still include _all_ info from the `user-info` hashmap, in case
    })
+
+(defn all-users-hashmap
+  "`get/info` returns more information when called on an individual user
+  than RocketChat gives you when you ask about all of the
+  users (`get/users`). Therefore we list the users and `get/info` each
+  of them."
+  [old & usernames] ;; e.g. (map :username (get/users))
+  (reduce
+   #(->> %2 (get/info :user) gen-fields (assoc %1 %2))
+   old
+   usernames))
+
+(comment
+
+  (user/all-users-hashmap {} ; see also meowth.cache
+     (map :username (get/users)))
+
+)
