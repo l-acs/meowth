@@ -9,7 +9,7 @@
 ;; encourage abstraction and reuse by only using full-fledged
 ;; user (constructed with gen-fields) -- not ids or usernames on
 ;; their own
-;; todo: maybe do similarly using full-fledged templatable room info
+
 
 (defn create [channel-name]
   (response-body
@@ -29,9 +29,19 @@
     (response-body
      (rocket-post :channels "setDefault" :roomId id :default default?))))
 
+(defn set-description [channel-name description]
+  (let [id (get/id :channels channel-name)]
+    (response-body
+     (rocket-post :channels "setDescription" :roomId id :description description))))
+
+(defn set-topic [channel-name topic]
+  (let [id (get/id :channels channel-name)]
+    (response-body
+     (rocket-post :channels "setTopic" :roomId id :topic topic))))
+
 (defn add-all [channel-name]
   (->> channel-name
-       (get/id :channels channel-name)
+       (get/id :channels)
        (rocket-post :channels "addAll" :roomId)
        response-body))
 
@@ -40,7 +50,13 @@
                :userId (:id user)
                :roomId (get/id domain room-name)))
 
-(defn modify-user-in-room
+(defn invite-user [channel-name user]
+  (invite-user-to-room :channels channel-name user))
+
+(defn invite-user-private [group-name user]
+  (invite-user-to-room :groups group-name user))
+
+(defn grant-room-status
   ;; `user` is a full set of user fields (from gen-fields, from
   ;; get/info), e.g.
 
@@ -49,8 +65,7 @@
   ;; `operation` is :add or :remove
   ;; `status` is :leader or :owner
   ;; `domain` is :channels or :groups
-
-  [user operation status domain room-name]
+  [domain room-name operation status user]
 
   (let [operation (name operation)
         status (capitalize-first-letter (name status))
@@ -59,9 +74,13 @@
                  :userId (:id user)
                  :roomId (get/id domain room-name))))
 
+(defn grant-status [channel-name operation status user]
+  (grant-room-status :channels channel-name operation status user))
+
+(defn grant-status-private [group-name operation status user]
+  (grant-room-status :groups group-name operation status user))
+
+
 (comment
-  (meowth.channel/create "meowth-test-3")
-  (meowth.channel/set-default "meowth-test-3" true)
-  (meowth.channel/rename "meowth-test-3" "meowth-test-4")
-  (meowth.channel/set-default "meowth-test-4" true)
-  (meowth.channel/delete "meowth-test-4"))
+  ; see examples.md for a thorough use case
+)

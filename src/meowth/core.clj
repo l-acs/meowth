@@ -3,6 +3,7 @@
   (:require
    [clojure.edn :as edn]
    [comb.template :as template]
+   [meowth.channel :as channel]
    [meowth.config :refer [*config* with-config]]
    [meowth.get :as get]
    [meowth.message :as message]

@@ -55,3 +55,24 @@ all new members (those who had joined since September 2020)
 
 (channel/modify-user-in-room my-user :add :leader :channels "meowth-test")
 ```
+## Delete some unused channels
+```clojure
+(map channel/delete ["meowth-test-3" "meowth-test-1" "off-topic-test"])
+```
+
+
+## Create a new channel, provide some information, make it a default, add all users, then send an initial message
+
+```clojure
+(let [topic "...."
+        description "What it says on the tin."
+        msg "Hey everyone! [...] So we've made this #off-topic channel!  Please use it :smiling_imp: [...]"]
+
+  (doto "off-topic"
+    channel/create
+    (channel/set-topic topic)
+    (channel/set-description description)
+    (channel/set-default true)
+    channel/add-all
+    (message/send-message msg)))
+```
